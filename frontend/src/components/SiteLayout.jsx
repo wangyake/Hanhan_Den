@@ -4,10 +4,10 @@ function SiteLayout() {
   return (
     <div className="site-page">
       <header className="site-header">
-        <div className="site-header-inner">
+        <div className="site-header-inner" style={{ backgroundImage: 'url(https://picsum.photos/id/1067/1200/400)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
           <div className="site-header-content">
             <div className="site-title">Welcome</div>
-            <div className="site-subtitle">行到水穷处，坐看云起时。</div>
+            <div className="site-subtitle">To strive, to seek, to find, and not to yield.</div>
           </div>
         </div>
       </header>

@@ -1,0 +1,306 @@
+/* 管理后台共用样式 */
+
+/* 图集管理页面的图片样式 */
+.gallery-image {
+  margin-bottom: 10px;
+}
+
+.gallery-image img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.gallery-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 游戏管理页面的描述样式 */
+.game-description {
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* 全局样式 */
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f5f7;
+}
+
+/* 侧边栏样式 */
+.admin-sidebar {
+  width: 200px;
+  background-color: #1d1d1f;
+  color: white;
+  padding: 20px;
+}
+
+.admin-sidebar h2 {
+  margin-bottom: 30px;
+  font-size: 18px;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar li {
+  margin-bottom: 15px;
+}
+
+.admin-sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.admin-sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 内容区域样式 */
+.admin-content {
+  flex: 1;
+  padding: 30px;
+}
+
+/* 登录页面样式 */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f7;
+}
+
+.login-form {
+  background-color: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-form h2 {
+  margin-bottom: 30px;
+  text-align: center;
+  color: #1d1d1f;
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #1d1d1f;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #0071e3;
+}
+
+.form-group.checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.form-group.checkbox input {
+  width: auto;
+  margin-right: 10px;
+}
+
+/* 按钮样式 */
+.login-btn,
+.add-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #0071e3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-btn:hover,
+.add-btn:hover {
+  background-color: #0077ed;
+}
+
+.submit-btn {
+  background-color: #34c759;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #30b150;
+}
+
+.edit-btn {
+  background-color: #ff9500;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: #ff9f1c;
+}
+
+.toggle-btn {
+  background-color: #5856d6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.toggle-btn:hover {
+  background-color: #5e5ce6;
+}
+
+.delete-btn,
+.logout-btn {
+  background-color: #ff3b30;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 10px;
+}
+
+.delete-btn:hover,
+.logout-btn:hover {
+  background-color: #ff453a;
+}
+
+/* 错误消息样式 */
+.error-message {
+  background-color: #ffecec;
+  color: #ff3b30;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* 加载状态样式 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #86868b;
+}
+
+/* 卡片样式 */
+.card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+/* 列表样式 */
+.list-container {
+  max-width: 800px;
+}
+
+.list-container h1 {
+  margin-bottom: 30px;
+  color: #1d1d1f;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.item {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.item h3 {
+  margin-bottom: 10px;
+  color: #1d1d1f;
+}
+
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #86868b;
+}
+
+.item-meta .hidden {
+  color: #ff3b30;
+}
+
+.item-meta .visible {
+  color: #34c759;
+}
+
+.item-actions {
+  display: flex;
+  gap: 10px;
+}

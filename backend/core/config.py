@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = ""
 
     DASHSCOPE_API_KEY: str
+    
+    # JWT配置
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # 默认mode = before, 在pydantic的默认类型校验之前进行
     @field_validator("ALLOWED_ORIGINS")  

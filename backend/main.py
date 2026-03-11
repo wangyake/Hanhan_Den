@@ -2,14 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
-from routers import story, job
+from routers import story_router, job_router, auth_router, admin_router
 from db.database import create_tables
 
 create_tables()
 
 app = FastAPI(
-    title = "Choose Your Own Adventure Game API",
-    description="api to generate cool stories",
+    title = "Hanhan's Den API",
+    description="API for Hanhan's Den website",
     version = "0.1.0",
     docs_url = "/docs",
     redoc_url = "/redoc",
@@ -23,8 +23,10 @@ app.add_middleware(
     allow_headers = ["*"],
 )
 
-app.include_router(story.router, prefix=settings.API_PREFIX)
-app.include_router(job.router, prefix=settings.API_PREFIX)
+app.include_router(story_router, prefix=settings.API_PREFIX)
+app.include_router(job_router, prefix=settings.API_PREFIX)
+app.include_router(auth_router, prefix=settings.API_PREFIX + "/auth")
+app.include_router(admin_router, prefix=settings.API_PREFIX + "/admin")
 
 
 if __name__ == "__main__":

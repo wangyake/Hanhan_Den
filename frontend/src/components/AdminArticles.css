@@ -1,0 +1,181 @@
+.admin-articles {
+  max-width: 800px;
+}
+
+.admin-articles h1 {
+  margin-bottom: 30px;
+  color: #1d1d1f;
+}
+
+.admin-articles .error-message {
+  background-color: #ffecec;
+  color: #ff3b30;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.admin-articles .add-btn {
+  background-color: #0071e3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  transition: background-color 0.2s;
+}
+
+.admin-articles .add-btn:hover {
+  background-color: #0077ed;
+}
+
+.admin-articles .add-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.admin-articles .add-form h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #1d1d1f;
+}
+
+.admin-articles .form-group {
+  margin-bottom: 15px;
+}
+
+.admin-articles .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #1d1d1f;
+  font-weight: 500;
+}
+
+.admin-articles .form-group input,
+.admin-articles .form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d2d2d7;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.admin-articles .form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.admin-articles .form-group.checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.admin-articles .form-group.checkbox input {
+  width: auto;
+  margin-right: 10px;
+}
+
+.admin-articles .submit-btn {
+  background-color: #34c759;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.admin-articles .submit-btn:hover {
+  background-color: #30b150;
+}
+
+.admin-articles .loading {
+  text-align: center;
+  padding: 40px;
+  color: #86868b;
+}
+
+.admin-articles .articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-articles .article-item {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.admin-articles .article-item h3 {
+  margin-bottom: 10px;
+  color: #1d1d1f;
+}
+
+.admin-articles .article-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #86868b;
+}
+
+.admin-articles .article-meta .hidden {
+  color: #ff3b30;
+}
+
+.admin-articles .article-meta .visible {
+  color: #34c759;
+}
+
+.admin-articles .article-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-articles .edit-btn,
+.admin-articles .toggle-btn,
+.admin-articles .delete-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.admin-articles .edit-btn {
+  background-color: #ff9500;
+  color: white;
+}
+
+.admin-articles .edit-btn:hover {
+  background-color: #ff9f1c;
+}
+
+.admin-articles .toggle-btn {
+  background-color: #5856d6;
+  color: white;
+}
+
+.admin-articles .toggle-btn:hover {
+  background-color: #5e5ce6;
+}
+
+.admin-articles .delete-btn {
+  background-color: #ff3b30;
+  color: white;
+}
+
+.admin-articles .delete-btn:hover {
+  background-color: #ff453a;
+}
