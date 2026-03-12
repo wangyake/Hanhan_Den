@@ -37,11 +37,15 @@ function StoryGenerator() {
 
         try {
             const response = await axios.post(`${API_BASE_URL}/stories/create`, {theme})
-            const {job_id, status} = response.data
+            const {job_id, status, story_id} = response.data
             setJobId(job_id)
             setJobStatus(status)
 
-            pollJobStatus(job_id)
+            if (status === "completed" && story_id) {
+                fetchStory(story_id)
+            } else {
+                pollJobStatus(job_id)
+            }
         } catch (e) {
             setLoading(false)
             setError(`Failed to generate story: ${e.message}`)
@@ -87,7 +91,17 @@ function StoryGenerator() {
         setLoading(false)
     }
 
+    const goToHome = () => {
+        navigate("/")
+    }
+
     return <div className="story-generator">
+        <div className="story-generator-header">
+            <button onClick={goToHome} className="home-btn">
+                Back
+            </button>
+        </div>
+        
         {error && <div className="error-message">
             <p>{error}</p>
             <button onClick={reset}>Try Again</button>

@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Cookie, Response, BackgroundTasks
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from db.database import get_db, SessionLocal
 from models.story import Story, StoryNode
@@ -36,6 +37,40 @@ def create_story(
 
     job_id = str(uuid.uuid4())
 
+    # 检查是否已经有相同主题的故事存在
+    # 直接查询 "勺子杀手" 主题的故事
+    if request.theme == "勺子杀手":
+        existing_job = db.query(StoryJob).filter(
+            StoryJob.theme == "勺子杀手",
+            StoryJob.status == "completed",
+            StoryJob.story_id.isnot(None)
+        ).first()
+    else:
+        # 使用不区分大小写的匹配，并且允许主题前后有空格
+        existing_job = db.query(StoryJob).filter(
+            func.lower(func.trim(StoryJob.theme)) == func.lower(func.trim(request.theme)),
+            StoryJob.status == "completed",
+            StoryJob.story_id.isnot(None)
+        ).first()
+    
+    if existing_job:
+        # 使用已存在的故事
+        existing_story = db.query(Story).filter(Story.id == existing_job.story_id).first()
+        if existing_story:
+            # 直接创建一个已完成的任务
+            job = StoryJob(
+                job_id = job_id,
+                session_id = session_id,
+                theme = request.theme,
+                status = "completed",
+                story_id = existing_story.id,
+                completed_at = datetime.now()
+            )  
+            db.add(job)
+            db.commit()
+            return job
+
+    # 如果没有已存在的故事，创建一个新任务
     job = StoryJob(
         job_id = job_id,
         session_id = session_id,
@@ -65,14 +100,14 @@ def generate_story_task(job_id: str, theme: str, session_id: str):
             job.status = "processing"
             db.commit()
 
+            # 直接生成新故事，因为已经在create_story函数中检查过了
             story = StoryGenerator.generate_story(db, session_id, theme)
 
-            job.story_id = story.id # todo: update story id
+            job.story_id = story.id
             job.status = "completed"
             job.completed_at = datetime.now()
             db.commit()
         except Exception as e:
-            print(e)
             job.status = "failed"
             job.completed_at = datetime.now()
             job.error = str(e)

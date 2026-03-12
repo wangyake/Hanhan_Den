@@ -22,10 +22,9 @@ function SiteLayout() {
               Gallery
               <span className="badge">soon</span>
             </a>
-            <a className="tab disabled" aria-disabled="true">
+            <NavLink to="/games" className={({ isActive }) => `tab ${isActive ? "active" : ""}`}>
               Mini Games
-              <span className="badge">soon</span>
-            </a>
+            </NavLink>
             <div className="tabs-spacer" />
             <NavLink to="/ai" className={({ isActive }) => `tab ${isActive ? "active" : ""}`}>
               AI

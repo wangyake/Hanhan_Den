@@ -37,7 +37,7 @@ function StoryLoader() {
     }
 
     const createNewStory = () => {
-        navigate("/")
+        navigate("/adventure")
     }
 
     if (loading) {
@@ -54,8 +54,17 @@ function StoryLoader() {
         </div>
     }
 
+    const goToHome = () => {
+        navigate("/")
+    }
+
     if (story) {
         return <div className="story-loader">
+            <div className="story-nav">
+                <button onClick={goToHome} className="home-btn">
+                    Back
+                </button>
+            </div>
             <StoryGame story={story} onNewStory={createNewStory} />
         </div>
     }

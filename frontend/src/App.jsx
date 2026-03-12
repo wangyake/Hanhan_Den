@@ -5,6 +5,7 @@ import StoryGenerator from "./components/StoryGenerator.jsx";
 import SiteLayout from "./components/SiteLayout.jsx";
 import Ai from "./components/Ai.jsx";
 import Articles from "./components/Articles.jsx";
+import Games from "./components/Games.jsx";
 import AdminLayout from "./components/AdminLayout.jsx";
 import AdminLogin from "./components/AdminLogin.jsx";
 import AdminArticles from "./components/AdminArticles.jsx";
@@ -19,6 +20,7 @@ function App() {
         <Route path={"/"} element={<SiteLayout />}>
           <Route index element={<Articles />} />
           <Route path={"articles"} element={<Articles />} />
+          <Route path={"games"} element={<Games />} />
           <Route path={"ai"} element={<Ai />} />
         </Route>
         <Route path={"/adventure"} element={<StoryGenerator />} />

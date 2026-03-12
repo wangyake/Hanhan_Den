@@ -7,16 +7,15 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 from core.prompts import STORY_PROMPT
 from models.story import Story, StoryNode
-from dotenv import load_dotenv
-import os 
+from core.config import settings
 
-load_dotenv()
 class StoryGenerator:
 
     @classmethod
     def _get_llm(cls):
+        api_key = settings.DASHSCOPE_API_KEY
         return ChatOpenAI(
-            api_key=os.getenv("DASHSCOPE_API_KEY"),
+            api_key=api_key,
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
             model="qwen-flash",
             max_tokens = 100
@@ -37,17 +36,11 @@ class StoryGenerator:
             )
         ]).partial(format_instructions=story_parser.get_format_instructions())
 
-        print("===============prompt================")
-        print(prompt.invoke({}))
-        raw_response = llm.invoke(prompt.invoke({}))
+        raw_response = llm.invoke(prompt.invoke({"theme": theme}))
 
         response_text = raw_response
         if hasattr(raw_response, "content"):
             response_text = raw_response.content
-
-        print("===============response_text================")
-        print(response_text)
-        print("============================================")
 
         story_structure = story_parser.parse(response_text)
 

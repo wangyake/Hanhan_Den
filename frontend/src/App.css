@@ -354,6 +354,12 @@ body {
   letter-spacing: -0.01em;
   margin-bottom: 0.25rem;
   font-size: 1.1rem;
+  text-decoration: none;
+  color: var(--shell-text);
+}
+
+.list-title:hover {
+  color: var(--accent);
 }
 
 .list-excerpt {
@@ -717,6 +723,23 @@ button:active {
   border-bottom: 1px solid #e9ecef;
 }
 
+/* Story Generator */
+.story-generator-header {
+  padding: 1rem 2rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.story-generator {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
 .home-btn {
   background-color: #6c757d;
   color: white;
@@ -859,4 +882,43 @@ button:active {
 
 .error-message button:hover {
   background-color: #d32f2f;
+}
+
+/* Game Card Styles */
+.game-card {
+  position: relative;
+  height: 120px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 1rem;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.game-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+}
+
+.game-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: color 0.2s;
+}
+
+.game-card-title:hover {
+  color: var(--accent);
 }

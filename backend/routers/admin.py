@@ -178,7 +178,7 @@ def delete_gallery(
 
 # 游戏管理
 
-# 获取游戏列表
+# 获取游戏列表（需要认证）
 @router.get("/games", response_model=list[GameResponse])
 def get_games(
     skip: int = 0,
@@ -187,6 +187,17 @@ def get_games(
     current_user: User = Depends(get_current_user)
 ):
     games = db.query(Game).offset(skip).limit(limit).all()
+    return games
+
+# 获取游戏列表（不需要认证，用于前端展示）
+@router.get("/games/public", response_model=list[GameResponse])
+def get_public_games(
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    # 只返回未隐藏的游戏
+    games = db.query(Game).filter(Game.is_hidden == False).offset(skip).limit(limit).all()
     return games
 
 # 更新游戏（用于切换隐藏状态）
