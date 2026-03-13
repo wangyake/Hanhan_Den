@@ -40,22 +40,24 @@ def create_story(
     # 检查是否已经有相同主题的故事存在
     # 直接查询 "勺子杀手" 主题的故事
     if request.theme == "勺子杀手":
-        existing_job = db.query(StoryJob).filter(
+        existing_jobs = db.query(StoryJob).filter(
             StoryJob.theme == "勺子杀手",
             StoryJob.status == "completed",
             StoryJob.story_id.isnot(None)
-        ).first()
+        ).all()
     else:
         # 使用不区分大小写的匹配，并且允许主题前后有空格
-        existing_job = db.query(StoryJob).filter(
+        existing_jobs = db.query(StoryJob).filter(
             func.lower(func.trim(StoryJob.theme)) == func.lower(func.trim(request.theme)),
             StoryJob.status == "completed",
             StoryJob.story_id.isnot(None)
-        ).first()
+        ).all()
     
-    if existing_job:
-        # 使用已存在的故事
-        existing_story = db.query(Story).filter(Story.id == existing_job.story_id).first()
+    # 如果有3个或以上相同主题的故事，随机选择一个
+    if len(existing_jobs) >= 3:
+        import random
+        selected_job = random.choice(existing_jobs)
+        existing_story = db.query(Story).filter(Story.id == selected_job.story_id).first()
         if existing_story:
             # 直接创建一个已完成的任务
             job = StoryJob(
@@ -69,6 +71,7 @@ def create_story(
             db.add(job)
             db.commit()
             return job
+    # 如果少于3个相同主题的故事，创建新任务生成故事
 
     # 如果没有已存在的故事，创建一个新任务
     job = StoryJob(

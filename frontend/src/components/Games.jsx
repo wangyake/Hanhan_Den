@@ -29,29 +29,29 @@ const Games = () => {
 
   // 游戏图标映射
   const gameIcons = {
-    '扫雷游戏': '/games/minesweeper-icon.svg',
-    '打字游戏': '/games/typing-icon.svg'
+    '扫雷': '/games/minesweeper-icon.svg',
+    '单词轰炸': '/games/typing-icon.svg'
   };
 
   // 游戏背景图映射（使用本地图片）
   const gameBackgrounds = {
     // 经典扫雷：使用带有科技感的图片
-    '扫雷游戏': '/images/minesweeper-bg.webp',
+    '扫雷': '/images/minesweeper-bg.webp',
     // 打字游戏：使用与键盘相关的图片
-    '打字游戏': '/images/typing-game-bg.webp'
+    '单词轰炸': '/images/typing-game-bg.webp'
   };
 
   // 硬编码游戏数据，确保背景图显示
   const hardcodedGames = [
     {
       id: 1,
-      title: '扫雷游戏',
+      title: '扫雷',
       description: '经典扫雷游戏，有三个难度级别',
       is_hidden: false
     },
     {
       id: 2,
-      title: '打字游戏',
+      title: '单词轰炸',
       description: '打字练习游戏，提高打字速度',
       is_hidden: false
     }
@@ -69,10 +69,9 @@ const Games = () => {
 
   // 获取游戏链接
   const getGameLink = (gameTitle) => {
-    if (gameTitle === '扫雷游戏') {
+    if (gameTitle === '扫雷') {
       return '/games/minesweeper.html';
-    }
-    if (gameTitle === '打字游戏') {
+    } else if (gameTitle === '单词轰炸') {
       return '/games/typing-game.html';
     }
     return '#';
