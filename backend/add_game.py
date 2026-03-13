@@ -1,30 +1,44 @@
 from db.database import SessionLocal, create_tables
 from models.content import Game
 
-# 创建表
-create_tables()
 
-# 创建数据库会话
-db = SessionLocal()
+def ensure_game(title: str, description: str) -> None:
+    """
+    如果数据库中不存在指定标题的游戏，则创建一条记录。
+    """
+    db = SessionLocal()
+    try:
+        existing = db.query(Game).filter(Game.title == title).first()
 
-try:
-    # 检查是否已存在扫雷游戏
-    existing_game = db.query(Game).filter(Game.title == "扫雷游戏").first()
-    
-    if not existing_game:
-        # 创建扫雷游戏记录
-        minesweeper_game = Game(
-            title="扫雷游戏",
-            description="经典的扫雷游戏，支持不同难度级别，记录最高分",
-            is_hidden=False
+        if existing:
+            print(f"游戏《{title}》已存在于数据库中（ID: {existing.id}）")
+            return
+
+        game = Game(
+            title=title,
+            description=description,
+            is_hidden=False,
         )
-        
-        db.add(minesweeper_game)
+        db.add(game)
         db.commit()
-        db.refresh(minesweeper_game)
-        
-        print(f"扫雷游戏已成功添加到数据库，ID: {minesweeper_game.id}")
-    else:
-        print("扫雷游戏已存在于数据库中")
-finally:
-    db.close()
+        db.refresh(game)
+        print(f"游戏《{title}》已成功添加到数据库，ID: {game.id}")
+    finally:
+        db.close()
+
+
+if __name__ == "__main__":
+    # 确保表存在
+    create_tables()
+
+    # 扫雷游戏
+    ensure_game(
+        "扫雷游戏",
+        "经典的扫雷游戏，支持不同难度级别，记录最高分",
+    )
+
+    # 打字游戏
+    ensure_game(
+        "打字游戏",
+        "单词从天花板落下，在落到地面之前正确输入则爆炸消灭，支持多档速度和本地最高分记录",
+    )

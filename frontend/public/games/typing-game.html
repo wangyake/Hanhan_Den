@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打字游戏 | Hanhan's Den</title>
+    <link rel="icon" href="/games/typing-icon.svg" type="image/svg+xml">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .difficulty-selector {
+            margin-bottom: 20px;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 1px solid #d2d2d7;
+            border-radius: 6px;
+            background-color: #ffffff;
+            color: #1d1d1f;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .difficulty-btn.active {
+            background-color: #0071e3;
+            color: #ffffff;
+            border-color: #0071e3;
+        }
+
+        .difficulty-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .difficulty-btn.active:hover {
+            background-color: #0064d3;
+        }
+
+        .game-area {
+            position: relative;
+            height: 500px; /* 确保游戏区域足够高 */
+            border: 2px solid #d2d2d7;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .game-area::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(45deg, #ff4500 25%, transparent 25%, transparent 50%, #ff4500 50%, #ff4500 75%, transparent 75%, transparent);
+            background-size: 20px 20px;
+            z-index: 1;
+        }
+
+        .word {
+            position: absolute;
+            font-size: 24px; /* 确保单词足够大 */
+            font-weight: 600;
+            color: #1d1d1f;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: top 0.5s linear;
+        }
+
+        .word .typed {
+            color: #0071e3;
+        }
+
+        .hearts {
+            font-size: 20px;
+            color: #ff3b30;
+        }
+
+        .hearts .heart.lost {
+            color: #c7c7cc;
+        }
+
+        .explosion {
+            position: absolute;
+            font-size: 30px;
+            animation: explosion 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes explosion {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .input-area {
+            margin: 20px 0;
+        }
+
+        .typing-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 18px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .typing-input:focus {
+            border-color: #0071e3;
+        }
+
+        .game-controls {
+            margin: 20px 0;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .start-btn {
+            background-color: #0071e3;
+            color: #ffffff;
+        }
+
+        .start-btn:hover {
+            background-color: #0064d3;
+        }
+
+        .pause-btn {
+            background-color: #ff9500;
+            color: #ffffff;
+        }
+
+        .pause-btn:hover {
+            background-color: #e08400;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #1d1d1f;
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #0071e3;
+            color: #ffffff;
+        }
+
+        .modal-btn:hover {
+            background-color: #0064d3;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            .game-area {
+                height: 400px;
+            }
+
+            .word {
+                font-size: 20px;
+            }
+
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>打字游戏</h1>
+            <div class="difficulty-selector">
+                <button class="difficulty-btn active" data-speed="1">简单</button>
+                <button class="difficulty-btn" data-speed="2">中等</button>
+                <button class="difficulty-btn" data-speed="3">困难</button>
+            </div>
+        </div>
+
+        <div class="game-info">
+            <div class="info-item">
+                <span class="info-label">得分</span>
+                <span class="info-value" id="score">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">时间</span>
+                <span class="info-value" id="time">60</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">生命值</span>
+                <div class="hearts" id="hearts">
+                    <span class="heart">❤</span>
+                    <span class="heart">❤</span>
+                    <span class="heart">❤</span>
+                </div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">最高分</span>
+                <span class="info-value" id="high-score">0</span>
+            </div>
+        </div>
+
+        <div class="game-area" id="game-area"></div>
+
+        <div class="input-area">
+            <input type="text" class="typing-input" id="typing-input" placeholder="开始游戏后，在此输入单词..." disabled>
+        </div>
+
+        <div class="game-controls">
+            <button class="control-btn start-btn" id="start-btn">开始游戏</button>
+            <button class="control-btn pause-btn" id="pause-btn" disabled>暂停</button>
+        </div>
+    </div>
+
+    <div class="modal" id="game-over-modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="modal-title">游戏结束</h2>
+            <p id="modal-message"></p>
+            <button class="modal-btn" id="modal-btn">确定</button>
+        </div>
+    </div>
+
+    <script>
+        class TypingGame {
+            constructor() {
+                this.words = [
+                    "apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew",
+                    "kiwi", "lemon", "mango", "nectarine", "orange", "peach", "quince", "raspberry",
+                    "strawberry", "tangerine", "watermelon", "zucchini", "computer", "keyboard", "mouse",
+                    "monitor", "printer", "scanner", "speaker", "headphones", "microphone", "camera",
+                    "phone", "tablet", "laptop", "desktop", "server", "network", "internet", "website",
+                    "browser", "search", "database", "software", "hardware", "program", "code", "debug"
+                ];
+                this.activeWords = [];
+                this.score = 0;
+                this.timeLeft = 60;
+                this.lives = 3;
+                this.gameStarted = false;
+                this.gamePaused = false;
+                this.gameOver = false;
+                this.timer = null;
+                this.wordTimer = null;
+                this.speed = 1;
+                this.wordSpeed = 1;
+                
+                this.init();
+            }
+
+            init() {
+                this.loadHighScore();
+                this.updateLives();
+                this.bindEvents();
+            }
+
+            loadHighScore() {
+                const highScore = localStorage.getItem('typing-game-high-score') || 0;
+                document.getElementById('high-score').textContent = highScore;
+            }
+
+            saveHighScore(score) {
+                const currentHighScore = parseInt(localStorage.getItem('typing-game-high-score') || 0);
+                if (score > currentHighScore) {
+                    localStorage.setItem('typing-game-high-score', score);
+                    document.getElementById('high-score').textContent = score;
+                }
+            }
+
+            updateLives() {
+                const hearts = document.getElementById('hearts');
+                hearts.innerHTML = '';
+                for (let i = 0; i < 3; i++) {
+                    const heart = document.createElement('span');
+                    heart.classList.add('heart');
+                    if (i >= this.lives) {
+                        heart.classList.add('lost');
+                    }
+                    heart.textContent = '❤';
+                    hearts.appendChild(heart);
+                }
+            }
+
+            bindEvents() {
+                // 难度选择
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.speed = parseInt(e.target.dataset.speed);
+                        // 调整单词下落速度，使三档速度更合理
+                        switch (this.speed) {
+                            case 1: // 简单
+                                this.wordSpeed = 0.5;
+                                break;
+                            case 2: // 中等
+                                this.wordSpeed = 0.8;
+                                break;
+                            case 3: // 困难
+                                this.wordSpeed = 1.2;
+                                break;
+                        }
+                    });
+                });
+
+                // 开始游戏按钮
+                document.getElementById('start-btn').addEventListener('click', () => {
+                    this.startGame();
+                });
+
+                // 暂停按钮
+                document.getElementById('pause-btn').addEventListener('click', () => {
+                    this.togglePause();
+                });
+
+                // 模态框按钮
+                document.getElementById('modal-btn').addEventListener('click', () => {
+                    document.getElementById('game-over-modal').style.display = 'none';
+                    this.resetGame();
+                });
+
+                // 输入框事件
+                document.getElementById('typing-input').addEventListener('input', (e) => {
+                    this.checkInput(e.target.value);
+                    this.updateWordDisplay(e.target.value);
+                });
+            }
+
+            startGame() {
+                this.resetGame();
+                this.gameStarted = true;
+                this.gamePaused = false;
+                this.gameOver = false;
+                this.score = 0;
+                this.timeLeft = 60;
+                this.lives = 3;
+                
+                document.getElementById('start-btn').textContent = '重新开始';
+                document.getElementById('pause-btn').disabled = false;
+                document.getElementById('typing-input').disabled = false;
+                document.getElementById('typing-input').focus();
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('time').textContent = this.timeLeft;
+                this.updateLives();
+                
+                // 启动计时器
+                this.startTimer();
+                
+                // 开始生成单词
+                this.startGeneratingWords();
+            }
+
+            resetGame() {
+                clearInterval(this.timer);
+                clearInterval(this.wordTimer);
+                
+                // 清空游戏区域
+                document.getElementById('game-area').innerHTML = '';
+                this.activeWords = [];
+                
+                this.gameStarted = false;
+                this.gamePaused = false;
+                this.gameOver = false;
+                this.score = 0;
+                this.timeLeft = 60;
+                this.lives = 3;
+                
+                document.getElementById('start-btn').textContent = '开始游戏';
+                document.getElementById('pause-btn').disabled = true;
+                document.getElementById('pause-btn').textContent = '暂停';
+                document.getElementById('typing-input').disabled = true;
+                document.getElementById('typing-input').value = '';
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('time').textContent = this.timeLeft;
+                this.updateLives();
+            }
+
+            togglePause() {
+                if (!this.gameStarted || this.gameOver) return;
+                
+                this.gamePaused = !this.gamePaused;
+                
+                if (this.gamePaused) {
+                    clearInterval(this.timer);
+                    clearInterval(this.wordTimer);
+                    document.getElementById('pause-btn').textContent = '继续';
+                } else {
+                    this.startTimer();
+                    this.startGeneratingWords();
+                    document.getElementById('pause-btn').textContent = '暂停';
+                }
+            }
+
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    document.getElementById('time').textContent = this.timeLeft;
+                    
+                    if (this.timeLeft <= 0) {
+                        this.gameOverHandler();
+                    }
+                }, 1000);
+            }
+
+            startGeneratingWords() {
+                // 调整单词生成速度，简单难度只有现在的1/3
+                let interval;
+                switch (this.speed) {
+                    case 1: // 简单
+                        interval = 3000; // 每3秒生成一个单词
+                        break;
+                    case 2: // 中等
+                        interval = 1500; // 每1.5秒生成一个单词
+                        break;
+                    case 3: // 困难
+                        interval = 1000; // 每1秒生成一个单词
+                        break;
+                    default:
+                        interval = 2000;
+                }
+                
+                this.wordTimer = setInterval(() => {
+                    if (!this.gamePaused && this.gameStarted) {
+                        this.generateWord();
+                    }
+                }, interval);
+            }
+
+            generateWord() {
+                const word = this.words[Math.floor(Math.random() * this.words.length)];
+                const gameArea = document.getElementById('game-area');
+                const gameAreaWidth = gameArea.offsetWidth;
+                const gameAreaHeight = gameArea.offsetHeight;
+                
+                const wordElement = document.createElement('div');
+                wordElement.classList.add('word');
+                wordElement.textContent = word;
+                wordElement.style.left = Math.random() * (gameAreaWidth - 100) + 'px';
+                wordElement.style.top = '-50px';
+                
+                gameArea.appendChild(wordElement);
+                
+                this.activeWords.push({
+                    element: wordElement,
+                    text: word,
+                    top: -50,
+                    speed: this.wordSpeed
+                });
+            }
+
+            updateWords() {
+                if (this.gamePaused || !this.gameStarted) return;
+                
+                for (let i = this.activeWords.length - 1; i >= 0; i--) {
+                    const word = this.activeWords[i];
+                    word.top += word.speed;
+                    word.element.style.top = word.top + 'px';
+                    
+                    // 检查单词是否到达底部
+                    if (word.top > document.getElementById('game-area').offsetHeight) {
+                        word.element.remove();
+                        this.activeWords.splice(i, 1);
+                        // 减少生命值
+                        this.lives--;
+                        this.updateLives();
+                        // 检查游戏是否结束
+                        if (this.lives <= 0) {
+                            this.gameOverHandler();
+                        }
+                    }
+                }
+            }
+
+            updateWordDisplay(input) {
+                if (!this.gameStarted || this.gamePaused || this.gameOver) return;
+                
+                let hasMatch = false;
+                
+                this.activeWords.forEach(word => {
+                    const text = word.text;
+                    if (text.startsWith(input)) {
+                        // 高亮已键入的部分
+                        const typedPart = text.substring(0, input.length);
+                        const remainingPart = text.substring(input.length);
+                        word.element.innerHTML = `<span class="typed">${typedPart}</span>${remainingPart}`;
+                        hasMatch = true;
+                    } else {
+                        // 恢复原始显示
+                        word.element.textContent = text;
+                    }
+                });
+                
+                // 如果没有匹配的单词，清空输入框
+                if (!hasMatch && input.length > 0) {
+                    document.getElementById('typing-input').value = '';
+                    // 重置所有单词的显示
+                    this.activeWords.forEach(w => {
+                        w.element.textContent = w.text;
+                    });
+                }
+            }
+
+            checkInput(input) {
+                if (!this.gameStarted || this.gamePaused || this.gameOver) return;
+                
+                for (let i = this.activeWords.length - 1; i >= 0; i--) {
+                    const word = this.activeWords[i];
+                    
+                    if (word.text === input) {
+                        // 单词匹配，加分并移除单词
+                        this.score++;
+                        document.getElementById('score').textContent = this.score;
+                        
+                        // 添加爆炸特效
+                        this.createExplosion(word.element);
+                        
+                        word.element.remove();
+                        this.activeWords.splice(i, 1);
+                        document.getElementById('typing-input').value = '';
+                        // 重置所有单词的显示
+                        this.activeWords.forEach(w => {
+                            w.element.textContent = w.text;
+                        });
+                        break;
+                    }
+                }
+            }
+
+            createExplosion(element) {
+                const explosion = document.createElement('div');
+                explosion.classList.add('explosion');
+                explosion.textContent = '💥';
+                
+                // 获取元素位置
+                const rect = element.getBoundingClientRect();
+                const gameArea = document.getElementById('game-area');
+                const gameAreaRect = gameArea.getBoundingClientRect();
+                
+                explosion.style.left = (rect.left - gameAreaRect.left + rect.width / 2 - 15) + 'px';
+                explosion.style.top = (rect.top - gameAreaRect.top + rect.height / 2 - 15) + 'px';
+                
+                gameArea.appendChild(explosion);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    explosion.remove();
+                }, 500);
+            }
+
+            gameOverHandler() {
+                clearInterval(this.timer);
+                clearInterval(this.wordTimer);
+                this.gameOver = true;
+                
+                // 保存最高分
+                this.saveHighScore(this.score);
+                
+                // 显示游戏结果
+                const modal = document.getElementById('game-over-modal');
+                const modalTitle = document.getElementById('modal-title');
+                const modalMessage = document.getElementById('modal-message');
+                
+                modalTitle.textContent = '游戏结束';
+                modalMessage.textContent = `你的得分是 ${this.score} 分！`;
+                
+                modal.style.display = 'flex';
+            }
+        }
+
+        // 初始化游戏
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new TypingGame();
+            
+            // 每帧更新单词位置
+            function gameLoop() {
+                game.updateWords();
+                requestAnimationFrame(gameLoop);
+            }
+            
+            gameLoop();
+        });
+    </script>
+</body>
+</html>

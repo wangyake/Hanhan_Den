@@ -900,14 +900,33 @@ button:active {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.game-card-overlay {
+.game-card-bg {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.game-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding: 1rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: white;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+}
+
+.game-card-title {
+  z-index: 3;
 }
 
 .game-card-title {

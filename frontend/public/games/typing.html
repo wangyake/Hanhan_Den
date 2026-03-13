@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>打字游戏 | Hanhan's Den</title>
+  <link rel="icon" href="/games/typing-icon.svg" type="image/svg+xml">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: radial-gradient(circle at top, #f9fafb 0%, #e5e7eb 35%, #f3f4f6 100%);
+      color: #1d1d1f;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .game-container {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+      width: 100%;
+      max-width: 960px;
+      padding: 24px 28px 22px;
+      backdrop-filter: blur(18px);
+    }
+
+    .game-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 16px;
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+
+    h1 span.badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background-color: #f5f5f7;
+      color: #0071e3;
+      border: 1px solid #d2d2d7;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #666666;
+    }
+
+    .highscore-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #444444;
+    }
+
+    .highscore-label {
+      font-weight: 500;
+    }
+
+    .difficulty-selector {
+      margin-top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .difficulty-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: #1d1d1f;
+      background-color: #ffffff;
+      border: 1px solid #d2d2d7;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.18s ease;
+    }
+
+    .difficulty-btn span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #d2d2d7;
+    }
+
+    .difficulty-btn[data-speed="slow"] span.dot {
+      background: #22c55e;
+    }
+
+    .difficulty-btn[data-speed="medium"] span.dot {
+      background: #eab308;
+    }
+
+    .difficulty-btn[data-speed="fast"] span.dot {
+      background: #ef4444;
+    }
+
+    .difficulty-btn.active {
+      background-color: #0071e3;
+      color: #ffffff;
+      border-color: #0071e3;
+    }
+
+    .difficulty-btn:not(.active):hover {
+      background-color: #f3f3f3;
+      border-color: #cfd0d3;
+    }
+
+    .difficulty-btn.active:hover {
+      background-color: #0064d3;
+    }
+
+    .game-main {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(150px, 0.7fr);
+      gap: 16px;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+
+    .game-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 8px 10px;
+      background-color: #fcfcfc;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+      align-self: stretch;
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #888888;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: #999999;
+      margin-top: 2px;
+    }
+
+    .game-area {
+      position: relative;
+      margin: 0;
+      height: 440px;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #f9f9f9;
+      border: 1px solid #d2d2d7;
+    }
+
+    .ground {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 18px;
+      background-color: #ffffff;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .ground::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background:
+        linear-gradient(-45deg, transparent 75%, #f97316 75%) 0 0/16px 16px repeat-x,
+        linear-gradient(45deg, transparent 75%, #f97316 75%) 0 0/16px 16px repeat-x;
+    }
+
+    .word {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 10px;
+      border-radius: 999px;
+      background-color: #ffffff;
+      border: 1px solid #d2d2d7;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      font-size: 15px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 2px;
+      will-change: transform, opacity;
+    }
+
+    .word span.typed {
+      color: #34c759;
+    }
+
+    .word span.remaining {
+      color: #1d1d1f;
+      opacity: 0.9;
+    }
+
+    .word.error {
+      animation: shake 0.18s ease-in-out 0s 2;
+      border-color: #ff3b30;
+      box-shadow: 0 10px 24px rgba(255, 59, 48, 0.25);
+    }
+
+    .word.exploding {
+      animation: explode 0.35s ease-out forwards;
+      background: radial-gradient(circle at center, #ffcc00, #ff9500);
+      border-color: #ffffff;
+      box-shadow: 0 14px 40px rgba(255, 149, 0, 0.6);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translate(-50%, 0); }
+      25% { transform: translate(calc(-50% - 4px), 0); }
+      75% { transform: translate(calc(-50% + 4px), 0); }
+    }
+
+    @keyframes explode {
+      0% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+      }
+      80% {
+        transform: translateX(-50%) scale(1.4);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-50%) scale(0.3);
+        opacity: 0;
+      }
+    }
+
+    .game-overlay-message {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .game-overlay-message.visible {
+      opacity: 1;
+    }
+
+    .overlay-card {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background-color: #ffffff;
+      border: 1px solid #d2d2d7;
+      font-size: 12px;
+      color: #1d1d1f;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .overlay-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #0071e3;
+      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.18);
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .input-group {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .input-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #666666;
+    }
+
+    .input-label-row span.hint {
+      color: #999999;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .type-input {
+      width: 100%;
+      padding: 10px 11px;
+      border-radius: 999px;
+      border: 1px solid #d2d2d7;
+      background-color: #f9f9f9;
+      color: #1d1d1f;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.16s ease;
+    }
+
+    .type-input::placeholder {
+      color: #b0b0b5;
+    }
+
+    .type-input:focus {
+      border-color: #0071e3;
+      box-shadow: 0 0 0 1px rgba(0, 113, 227, 0.25);
+      background-color: #ffffff;
+    }
+
+    .type-input.error {
+      border-color: #ff3b30;
+      box-shadow: 0 0 0 1px rgba(255, 59, 48, 0.35);
+    }
+
+    .buttons-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #ffffff;
+      background-color: #0071e3;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      border: none;
+    }
+
+    .btn.secondary {
+      background-color: #ffffff;
+      border: 1px solid #d2d2d7;
+      box-shadow: none;
+      color: #1d1d1f;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .btn:not(:disabled):hover {
+      background-color: #0064d3;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .btn.secondary:not(:disabled):hover {
+      background-color: #f5f5f7;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-icon {
+      font-size: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .game-container {
+        padding: 20px 16px 18px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .game-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .game-main {
+        grid-template-columns: 1fr;
+      }
+
+      .game-area {
+        height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <header class="game-header">
+      <div class="title-group">
+        <h1>
+          打字游戏
+          <span class="badge">Typing Trainer</span>
+        </h1>
+      </div>
+      <div class="difficulty-selector">
+        <div class="highscore-pill">
+          <span class="highscore-label">最高得分：</span>
+          <span id="high-score">0</span>
+        </div>
+        <div>
+          <button class="difficulty-btn active" data-speed="slow">
+            <span class="dot"></span>
+            慢速
+          </button>
+          <button class="difficulty-btn" data-speed="medium">
+            <span class="dot"></span>
+            正常
+          </button>
+          <button class="difficulty-btn" data-speed="fast">
+            <span class="dot"></span>
+            极速
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="game-main">
+      <div class="game-area" id="game-area">
+        <div class="game-overlay-message visible" id="overlay-message">
+          <div class="overlay-card">
+            <div class="overlay-dot"></div>
+            <span></span>
+          </div>
+        </div>
+        <div class="ground"></div>
+      </div>
+
+      <section class="game-stats">
+        <div class="stat-card">
+          <div class="stat-label">得分</div>
+          <div class="stat-value" id="score">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">完成数</div>
+          <div class="stat-value" id="words-cleared">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">错误数</div>
+          <div class="stat-value" id="mistakes">0</div>
+        </div>
+      </section>
+    </section>
+
+    <section class="controls-row">
+      <div class="input-group">
+        <div class="input-label-row">
+          <span>输入区</span>
+        </div>
+        <input
+          id="type-input"
+          class="type-input"
+          type="text"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="跟着屏幕上方的单词或短句打字……"
+        />
+      </div>
+      <div class="buttons-group">
+        <button id="start-btn" class="btn">
+          <span class="btn-icon">▶</span>
+          开始游戏
+        </button>
+        <button id="restart-btn" class="btn secondary" disabled>
+          <span class="btn-icon">⟲</span>
+          重新开始
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const words = [
+        'hello',
+        'keyboard',
+        'javascript',
+        'fast typing',
+        'hanhan den',
+        'focus on accuracy',
+        'type before it falls',
+        'code and stories',
+        'tiny game big fun',
+        'stay calm and type',
+        'typing practice',
+        'sunny morning',
+        'lovely afternoon',
+        'midnight runner',
+        'pixel explosion',
+        'double combo',
+        'clean and sharp',
+        'keep breathing',
+        'trust your fingers',
+        'enjoy the rhythm'
+      ];
+
+      const gameArea = document.getElementById('game-area');
+      const scoreEl = document.getElementById('score');
+      const highScoreEl = document.getElementById('high-score');
+      const clearedEl = document.getElementById('words-cleared');
+      const mistakesEl = document.getElementById('mistakes');
+      const inputEl = document.getElementById('type-input');
+      const startBtn = document.getElementById('start-btn');
+      const restartBtn = document.getElementById('restart-btn');
+      const overlayMessage = document.getElementById('overlay-message');
+      const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+
+      const HIGH_SCORE_KEY = 'typing-game-high-score';
+
+      const difficultyConfig = {
+        slow: { speed: 55, spawnInterval: 3200 },   // 单位：像素/秒
+        medium: { speed: 85, spawnInterval: 2600 },
+        fast: { speed: 120, spawnInterval: 2000 }
+      };
+
+      let currentDifficulty = 'slow';
+      let activeWord = null;
+      let score = 0;
+      let clearedCount = 0;
+      let mistakes = 0;
+      let isRunning = false;
+      let lastFrameTime = null;
+      let spawnTimer = null;
+      let animationFrameId = null;
+
+      function loadHighScore() {
+        const stored = window.localStorage.getItem(HIGH_SCORE_KEY);
+        const value = stored ? parseInt(stored, 10) || 0 : 0;
+        highScoreEl.textContent = value;
+      }
+
+      function saveHighScoreIfNeeded(newScore) {
+        const current = parseInt(highScoreEl.textContent || '0', 10) || 0;
+        if (newScore > current) {
+          highScoreEl.textContent = newScore;
+          try {
+            window.localStorage.setItem(HIGH_SCORE_KEY, String(newScore));
+          } catch (e) {
+            // 忽略本地存储异常
+          }
+        }
+      }
+
+      function setDifficulty(key) {
+        currentDifficulty = key;
+        difficultyButtons.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.speed === key);
+        });
+      }
+
+      function randomWord() {
+        return words[Math.floor(Math.random() * words.length)];
+      }
+
+      function resetGameState() {
+        score = 0;
+        clearedCount = 0;
+        mistakes = 0;
+        activeWord = null;
+        scoreEl.textContent = '0';
+        clearedEl.textContent = '0';
+        mistakesEl.textContent = '0';
+        inputEl.value = '';
+        inputEl.classList.remove('error');
+        overlayMessage.classList.remove('visible');
+        clearWordsInArea();
+      }
+
+      function clearWordsInArea() {
+        const existing = gameArea.querySelectorAll('.word');
+        existing.forEach(el => el.remove());
+      }
+
+      function createWordElement(text) {
+        const el = document.createElement('div');
+        el.className = 'word';
+
+        const typedSpan = document.createElement('span');
+        typedSpan.className = 'typed';
+        typedSpan.textContent = '';
+
+        const remainingSpan = document.createElement('span');
+        remainingSpan.className = 'remaining';
+        remainingSpan.textContent = text;
+
+        el.appendChild(typedSpan);
+        el.appendChild(remainingSpan);
+
+        el.style.top = '-40px';
+
+        gameArea.appendChild(el);
+
+        const rect = gameArea.getBoundingClientRect();
+        const padding = 40;
+        const minX = padding;
+        const maxX = rect.width - padding;
+        const randomX = Math.random() * (maxX - minX) + minX;
+        el.style.left = randomX + 'px';
+
+        return {
+          element: el,
+          typedSpan,
+          remainingSpan,
+          text,
+          typed: '',
+          y: -40
+        };
+      }
+
+      function scheduleNextSpawn() {
+        if (!isRunning) return;
+        if (spawnTimer) {
+          clearTimeout(spawnTimer);
+        }
+        const { spawnInterval } = difficultyConfig[currentDifficulty];
+        spawnTimer = setTimeout(() => {
+          if (!activeWord) {
+            activeWord = createWordElement(randomWord());
+          }
+          scheduleNextSpawn();
+        }, spawnInterval);
+      }
+
+      function playExplosionSound() {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+
+          const ctx = new AudioContext();
+          const oscillator = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          oscillator.type = 'square';
+          oscillator.frequency.value = 320;
+          gain.gain.value = 0.25;
+
+          oscillator.connect(gain);
+          gain.connect(ctx.destination);
+
+          const now = ctx.currentTime;
+          oscillator.start(now);
+          oscillator.frequency.exponentialRampToValueAtTime(80, now + 0.18);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          oscillator.stop(now + 0.25);
+
+          setTimeout(() => ctx.close(), 400);
+        } catch (e) {
+          // 忽略音频异常
+        }
+      }
+
+      function triggerExplosion(wordObj) {
+        if (!wordObj || !wordObj.element) return;
+        wordObj.element.classList.add('exploding');
+        playExplosionSound();
+        setTimeout(() => {
+          wordObj.element.remove();
+        }, 260);
+      }
+
+      function gameOver() {
+        isRunning = false;
+        startBtn.textContent = '开始游戏';
+        restartBtn.disabled = false;
+        inputEl.classList.remove('error');
+        inputEl.blur();
+        cancelAnimationFrame(animationFrameId);
+        if (spawnTimer) {
+          clearTimeout(spawnTimer);
+          spawnTimer = null;
+        }
+        saveHighScoreIfNeeded(score);
+        overlayMessage.classList.add('visible');
+        overlayMessage.querySelector('span').textContent = '游戏结束';
+      }
+
+      function updateWordPosition(deltaTime) {
+        if (!activeWord) return;
+        const { speed } = difficultyConfig[currentDifficulty];
+        const distance = (speed * deltaTime) / 1000;
+        activeWord.y += distance;
+        activeWord.element.style.top = activeWord.y + 'px';
+
+        const groundRect = gameArea.getBoundingClientRect();
+        const wordHeight = 28; // 估算单词气泡高度（与 .word 的 padding + 字体匹配）
+        const groundHeight = 40; // 与 .ground 的高度保持一致
+        if (activeWord.y + wordHeight >= groundRect.height - groundHeight) {
+          activeWord.element.classList.add('error');
+          setTimeout(() => {
+            if (activeWord && activeWord.element) {
+              activeWord.element.remove();
+            }
+            activeWord = null;
+            gameOver();
+          }, 220);
+        }
+      }
+
+      function loop(timestamp) {
+        if (!isRunning) return;
+        if (!lastFrameTime) {
+          lastFrameTime = timestamp;
+        }
+        const delta = timestamp - lastFrameTime;
+        lastFrameTime = timestamp;
+
+        if (activeWord) {
+          updateWordPosition(delta);
+        }
+
+        animationFrameId = requestAnimationFrame(loop);
+      }
+
+      function handleInputChange() {
+        if (!activeWord || !isRunning) {
+          inputEl.value = '';
+          return;
+        }
+
+        const target = activeWord.text;
+        const input = inputEl.value;
+
+        if (!input) {
+          activeWord.typed = '';
+          activeWord.typedSpan.textContent = '';
+          activeWord.remainingSpan.textContent = target;
+          inputEl.classList.remove('error');
+          activeWord.element.classList.remove('error');
+          return;
+        }
+
+        if (!target.startsWith(input)) {
+          mistakes += 1;
+          mistakesEl.textContent = String(mistakes);
+          inputEl.classList.add('error');
+          activeWord.element.classList.add('error');
+
+          setTimeout(() => {
+            inputEl.value = '';
+            inputEl.classList.remove('error');
+            activeWord.element.classList.remove('error');
+            activeWord.typed = '';
+            activeWord.typedSpan.textContent = '';
+            activeWord.remainingSpan.textContent = target;
+          }, 160);
+          return;
+        }
+
+        activeWord.typed = input;
+        activeWord.typedSpan.textContent = input;
+        activeWord.remainingSpan.textContent = target.slice(input.length);
+        inputEl.classList.remove('error');
+        activeWord.element.classList.remove('error');
+
+        if (input === target) {
+          score += 1;
+          clearedCount += 1;
+          scoreEl.textContent = String(score);
+          clearedEl.textContent = String(clearedCount);
+
+          triggerExplosion(activeWord);
+          activeWord = null;
+          inputEl.value = '';
+        }
+      }
+
+      function startGame() {
+        if (isRunning) return;
+        isRunning = true;
+        lastFrameTime = null;
+        overlayMessage.classList.remove('visible');
+        startBtn.textContent = '进行中';
+        restartBtn.disabled = false;
+        inputEl.focus();
+
+        if (!activeWord) {
+          activeWord = createWordElement(randomWord());
+        }
+
+        scheduleNextSpawn();
+        animationFrameId = requestAnimationFrame(loop);
+      }
+
+      function restartGame() {
+        cancelAnimationFrame(animationFrameId);
+        if (spawnTimer) {
+          clearTimeout(spawnTimer);
+          spawnTimer = null;
+        }
+        isRunning = false;
+        lastFrameTime = null;
+        resetGameState();
+        startGame();
+      }
+
+      difficultyButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const speedKey = btn.dataset.speed;
+          setDifficulty(speedKey);
+        });
+      });
+
+      inputEl.addEventListener('input', handleInputChange);
+
+      startBtn.addEventListener('click', () => {
+        if (!isRunning) {
+          if (score === 0 && clearedCount === 0 && mistakes === 0) {
+            resetGameState();
+          }
+          startGame();
+        }
+      });
+
+      restartBtn.addEventListener('click', () => {
+        restartGame();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.code === 'Space' && !event.repeat) {
+          // 如果正在输入框中打字，则不拦截空格，保证短语中的空格可以正常输入
+          if (event.target === inputEl) {
+            return;
+          }
+
+          event.preventDefault();
+          if (!isRunning) {
+            if (score === 0 && clearedCount === 0 && mistakes === 0) {
+              resetGameState();
+            }
+            startGame();
+          }
+        }
+      });
+
+      loadHighScore();
+      resetGameState();
+    })();
+  </script>
+</body>
+</html>
+
